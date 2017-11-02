@@ -1,16 +1,17 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using Test.Domain;
 
-namespace test.Models.Data
+namespace Test.Data
 {
     public class Context : DbContext
     {
         public Context() : base("test")
         {
-            //Database.SetInitializer<Context>(null);
+            Database.SetInitializer<Context>(null);
         }
 
-        public DbSet<PoTransaction> PoTransactions { get; set; }
+        public DbSet<PoInfo> PoInfo { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
