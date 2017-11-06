@@ -37,9 +37,7 @@
   <ItemGroup>
     <Compile Include="LineItem.cs" />
     <Compile Include="PoInfo.cs" />
-    <Compile Include="PoTransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RootObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -20,12 +20,12 @@ namespace test
         [TearDown]
         public void teardown()
         {
-            using (var context = new Context())
-            {
-                context.PoInfo.Attach(_poInfo);
-                context.PoInfo.Remove(_poInfo);
-                context.SaveChanges();
-            }
+            //using (var context = new Context())
+            //{
+            //    context.PoInfo.Attach(_poInfo);
+            //    context.PoInfo.Remove(_poInfo);
+            //    context.SaveChanges();
+            //}
         }
 
         [Test]
@@ -78,7 +78,8 @@ namespace test
                 poObject = context.PoInfo.Include(x => x.LineItems).ToList();
             }
 
-            Assert.That(poObject[0].SenderId, Is.EqualTo(_poInfo.SenderId));
+            Assert.That(poObject.Any(x => x.SenderId == _poInfo.SenderId));
+            Assert.That(poObject.First(x => x.SenderId == _poInfo.SenderId).LineItems.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -89,6 +90,13 @@ namespace test
                 context.PoInfo.RemoveRange(context.PoInfo.Where(x => x.SenderId > 0));
                 context.SaveChanges();
             }
+        }
+
+        [Test]
+        public void join()
+        {
+            var testlist = new List<int>{20,1};
+            System.Diagnostics.Debug.WriteLine($"{string.Join(", ", testlist)}");
         }
     }
 }

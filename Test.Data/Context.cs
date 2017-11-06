@@ -8,7 +8,7 @@ namespace Test.Data
     {
         public Context() : base("test")
         {
-            Database.SetInitializer<Context>(null);
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<Context>());
         }
 
         public DbSet<PoInfo> PoInfo { get; set; }
