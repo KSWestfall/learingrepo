@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using NUnit.Framework;
-using Test.Domain;
 using Test.Data;
+using Test.Domain.Models;
 
 namespace test
 {
@@ -22,8 +22,8 @@ namespace test
         {
             //using (var context = new Context())
             //{
-            //    context.PoInfo.Attach(_poInfo);
-            //    context.PoInfo.Remove(_poInfo);
+            //    context.PoInfos.Attach(_poInfo);
+            //    context.PoInfos.Remove(_poInfo);
             //    context.SaveChanges();
             //}
         }
@@ -31,7 +31,47 @@ namespace test
         [Test]
         public void load()
         {
-            _poInfo = new PoInfo
+            _poInfo = SetupPoObject();
+
+            using (var context = new Context())
+            {
+                context.PoInfos.Add(_poInfo);
+                context.SaveChanges();
+            }
+
+            List<PoInfo> poObject;
+
+            using (var context = new Context())
+            {
+                context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+
+                poObject = context.PoInfos.Include(x => x.LineItems).ToList();
+            }
+
+            Assert.That(poObject.Any(x => x.SenderId == _poInfo.SenderId));
+            Assert.That(poObject.First(x => x.SenderId == _poInfo.SenderId).LineItems.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void delete()
+        {
+            using (var context = new Context())
+            {
+                context.PoInfos.RemoveRange(context.PoInfos.Where(x => x.SenderId > 0));
+                context.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void join()
+        {
+            var testlist = new List<int>{20,1};
+            System.Diagnostics.Debug.WriteLine($"{string.Join(", ", testlist)}");
+        }
+
+        private static PoInfo SetupPoObject()
+        {
+            return new PoInfo
             {
                 Sidemark = "test",
                 SenderId = new Random().Next(),
@@ -43,7 +83,7 @@ namespace test
                 StState = "test",
                 StZip = "test",
                 UnitType = 1,
-                Po = 1,
+                Po = "Po thingy",
                 LineItems = new List<LineItem>
                 {
                     new LineItem
@@ -62,41 +102,6 @@ namespace test
                     }
                 }
             };
-
-            using (var context = new Context())
-            {
-                context.PoInfo.Add(_poInfo);
-                context.SaveChanges();
-            }
-
-            List<PoInfo> poObject;
-
-            using (var context = new Context())
-            {
-                context.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
-
-                poObject = context.PoInfo.Include(x => x.LineItems).ToList();
-            }
-
-            Assert.That(poObject.Any(x => x.SenderId == _poInfo.SenderId));
-            Assert.That(poObject.First(x => x.SenderId == _poInfo.SenderId).LineItems.Count, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void delete()
-        {
-            using (var context = new Context())
-            {
-                context.PoInfo.RemoveRange(context.PoInfo.Where(x => x.SenderId > 0));
-                context.SaveChanges();
-            }
-        }
-
-        [Test]
-        public void join()
-        {
-            var testlist = new List<int>{20,1};
-            System.Diagnostics.Debug.WriteLine($"{string.Join(", ", testlist)}");
         }
     }
 }
